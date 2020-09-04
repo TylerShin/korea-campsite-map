@@ -4,8 +4,6 @@ import campingSiteData from "./data/camping.json";
 
 declare var kakao: any;
 
-console.log(campingSiteData);
-
 function App() {
   useEffect(() => {
     const container = document.getElementById("camp-map");
@@ -15,7 +13,16 @@ function App() {
     };
 
     const map = new kakao.maps.Map(container, options);
-    console.log(map);
+
+    campingSiteData.map((camp) => {
+      const markerPosition = new kakao.maps.LatLng(camp["위도"], camp["경도"]);
+      const marker = new kakao.maps.Marker({
+        position: markerPosition,
+      });
+
+      marker.setMap(map);
+      return marker;
+    });
   }, []);
 
   return (
@@ -23,7 +30,7 @@ function App() {
       <CSSReset />
       <Heading as="h1">전국 캠프사이트 현황</Heading>
       <Box>
-        <Box id="camp-map" w="640px" h="480px" />
+        <Box id="camp-map" w="100%" h="80vh" />
       </Box>
     </ThemeProvider>
   );
