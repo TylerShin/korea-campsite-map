@@ -18,15 +18,21 @@ function App() {
     CAMPSITE_TYPE[]
   >(["일반야영장", "자동차야영장"]);
   const KakaoMap = useRef<any>();
+  const markerClusterer = useRef<any>(null);
 
   useEffect(() => {
     const container = document.getElementById("camp-map");
     const options = {
-      center: new kakao.maps.LatLng(33.450701, 126.570667),
-      level: 3,
+      center: new kakao.maps.LatLng(37.264842, 126.96033),
+      level: 11,
     };
-
     KakaoMap.current = new kakao.maps.Map(container, options);
+
+    markerClusterer.current = new kakao.maps.MarkerClusterer({
+      map: KakaoMap.current,
+      averageCenter: true,
+      minLevel: 10,
+    });
   }, []);
 
   useEffect(() => {
@@ -50,7 +56,6 @@ function App() {
         marker.setMap(KakaoMap.current);
 
         kakao.maps.event.addListener(marker, "mouseover", () => {
-          console.log("fire mouseover");
           infoWindow.open(KakaoMap.current, marker);
         });
 
@@ -61,10 +66,11 @@ function App() {
         return marker;
       });
 
+    markerClusterer.current.addMarkers(markers);
+
     return () => {
-      markers.forEach((marker) => {
-        marker.setMap(null);
-      });
+      markers.forEach((marker) => marker.setMap(null));
+      markerClusterer.current.clear();
     };
   }, [selectedCampsiteType]);
 
